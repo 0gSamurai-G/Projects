@@ -27,7 +27,7 @@ int main(){
 
         case 4:
             cout<<" "<<b/c;
-        break;
+            break;
 
         default:
             cout<<"Invalid option";
