@@ -1,0 +1,107 @@
+Assignment No : 03
+a) Write C++ program to draw the following pattern. Use DDA line and Bresenham‘s circle 
+drawing algorithm. Apply the concept of encapsulation.
+Code :-
+#include <iostream>
+#include <graphics.h>
+#include <conio.h>
+#include <math.h>
+using namespace std;
+class Point {
+protected:
+ int x, y;
+public:
+ Point(int x0, int y0) {
+ x = x0;
+ y = y0;
+ }
+ void draw() {
+ putpixel(x, y, 15);
+ }
+ int getX() {
+ return x;
+ }
+ int getY() {
+ return y;
+ }
+};
+class DDALine : public Point {
+private:
+ int x2, y2;
+public:
+ DDALine(int x1, int y1, int x3, int y3) : Point(x1, y1) {
+ x2 = x3;
+ y2 = y3;
+ }
+ void drawLine() {
+ int dx = x2 - x;
+ int dy = y2 - y;
+ int steps = abs(dx) > abs(dy) ? abs(dx) : abs(dy);
+ float xIncrement = (float)dx / (float)steps;
+ float yIncrement = (float)dy / (float)steps;
+ float xTmp = x;
+ float yTmp = y;
+for (int i = 0; i <= steps; i++) {
+ Point(xTmp, yTmp).draw();
+ xTmp += xIncrement;
+ yTmp += yIncrement;
+ }
+ }
+};
+class BresenhamCircle : public Point {
+private:
+ int radius;
+public:
+ BresenhamCircle(int x, int y, int r) : Point(x, y) {
+ radius = r;
+ }
+ void drawCircle() {
+ int x0 = getX();
+ int y0 = getY();
+ int x = radius;
+ int y = 0;
+ int err = 0;
+ while (x >= y) {
+ Point(x0 + x, y0 + y).draw();
+ Point(x0 - x, y0 + y).draw();
+ Point(x0 + x, y0 - y).draw();
+ Point(x0 - x, y0 - y).draw();
+ if (x != y) {
+ Point(x0 + y, y0 + x).draw();
+ Point(x0 - y, y0 + x).draw();
+ Point(x0 + y, y0 - x).draw();
+ Point(x0 - y, y0 - x).draw();
+ }
+ if (err <= 0) {
+ y += 1;
+ err += 2 * y + 1;
+ }
+ if (err > 0) {
+ x -= 1;
+ err -= 2 * x + 1;
+ }
+ }
+ }
+};
+int main() {
+ int gd = DETECT, gm;
+ initgraph(&gd, &gm,NULL);
+ int x1, y1, x2, y2, x3, y3;
+cout << "Enter the coordinates of the triangle vertices (x1, y1), (x2, y2), (x3, y3): ";
+ cin >> x1 >> y1 >> x2 >> y2 >> x3 >> y3;
+ DDALine(x1, y1, x2, y2).drawLine();
+ DDALine(x2, y2, x3, y3).drawLine();
+ DDALine(x3, y3, x1, y1).drawLine();
+ int circumX = (x1 + x2 + x3) / 3;
+ int circumY = (y1 + y2 + y3) / 3;
+ int circumRadius = sqrt(pow(circumX - x1, 2) + pow(circumY - y1, 2));
+ BresenhamCircle(circumX, circumY, circumRadius).drawCircle();
+ int s = (sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2)) + sqrt(pow(x3 - x2, 2) + pow(y3 - y2, 2)) + 
+sqrt(pow(x1 - x3, 2) + pow(y1 - y3, 2))) / 2;
+ float inRadius = sqrt((s - sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2))) * (s - sqrt(pow(x3 - x2, 2) 
++ pow(y3 - y2, 2))) * (s - sqrt(pow(x1 - x3, 2) + pow(y1 - y3, 2))) / s);
+ BresenhamCircle(circumX, circumY, inRadius).drawCircle();
+getch();
+ closegraph();
+ return 0;
+}
